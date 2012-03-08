@@ -1,15 +1,19 @@
 $(function() {
   FB.init({
-    appId   : Config.appId,
+    appId   : App.appId,
     cookie  : true,
     oauth   : true
   });
 
-  FB.getLoginStatus(function(response) {
-    if (response.status === 'connected') {
-      console.log("HELLO")
-    } else {
-      window.location = Config.authUrl
-    }
-  });
+  if (!App.userId) {
+    FB.getLoginStatus(function(response) {
+      if (response.status === 'connected') {
+        $('#access-token').val(response.authResponse.accessToken);
+        $('#auth-form').submit();
+      }
+      else {
+        window.location = App.authUrl;
+      }
+    });
+  }
 });

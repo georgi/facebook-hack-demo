@@ -1,59 +1,48 @@
 require "sinatra"
+require 'json'
+require 'net/http'
+require 'cgi'
+
+require "./soundcloud"
 require "./facebook"
-require "./models"
+require "./user"
+require "./helpers"
 
 enable :sessions
-set :raise_errors, false
-set :show_exceptions, false
 
 before do
-  # HTTPS redirect
   if settings.environment == :production && request.scheme != 'https'
     redirect "https://#{request.env['HTTP_HOST']}"
   end
 end
 
-helpers do
-  def url(path)
-    base = "#{request.scheme}://#{request.env['HTTP_HOST']}"
-    base + path
-  end
-
-  def config
-    { :appId => Facebook::APP_ID,
-      :scope => Facebook::SCOPE,
-      :authUrl => auth_url }
-  end
-
-  def auth_url
-    "https://www.facebook.com/dialog/oauth?scope=#{Facebook::SCOPE}&client_id=#{Facebook::APP_ID}&redirect_uri=#{url('/signup')}"
-  end
-
-  def user
-    if session[:user]
-      @user ||= User.find_by_id(session[:user])
-    end
-  end
-end
-
 get "/" do
-  erb :index
+  begin
+    if user
+      @actions = user.facebook.get('/me/soundcloud:listen')['data']
+    end
+
+    erb :index
+
+  rescue Facebook::OAuthException
+    redirect auth_url
+  end
 end
 
 post "/" do
   redirect "/"
 end
 
-get "/signup" do
-  client = Facebook.exchange_code(params[:code], url('/signup'))
+get "/auth" do
+  client = Facebook.exchange_code(params[:code], url('/auth'))
   user = User.from_facebook(client)
-  session[:user] = user.id
+  session[:user] = user.uid
   redirect '/'
 end
 
-post "/login" do
+post "/auth" do
   client = Facebook.exchange_token(params[:token])
   user = User.from_facebook(client)
-  session[:user] = user.id
+  session[:user] = user.uid
   redirect '/'
 end
