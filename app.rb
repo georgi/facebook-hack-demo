@@ -22,7 +22,11 @@ get "/" do
   begin
     if user
       # Logged in users have a Facebook connection
-      @actions = user.facebook.get('/me/soundcloud:listen')['data']
+      artists = user.facebook.get('/me/music.listens')['data'].map do |action|
+        action['data']['musician']['title']
+      end
+
+      raise artists.to_json
     end
 
     # rendering html template

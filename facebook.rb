@@ -1,5 +1,5 @@
 class Facebook
-  SCOPE = 'user_actions:soundcloud'
+  SCOPE = 'user_actions.music,friends_actions.music'
   APP_ID = ENV["FACEBOOK_APP_ID"] or raise "please set the environment variable FACEBOOK_APP_ID"
   APP_SECRET = ENV["FACEBOOK_SECRET"] or raise "please set the environment variable FACEBOOK_SECRET"
 
