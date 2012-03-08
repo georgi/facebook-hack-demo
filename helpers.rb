@@ -1,3 +1,10 @@
+
+def urlencode_hash(hash)
+  hash.map do |key, value|
+    "#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_s)}"
+  end.join("&")
+end
+
 helpers do
   def url(path)
     base = "#{request.scheme}://#{request.env['HTTP_HOST']}"

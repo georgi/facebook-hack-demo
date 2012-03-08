@@ -1,3 +1,5 @@
+# Users should be saved in a database. This is just plain ruby object
+# for demonstration purpose.
 class User
   attr_reader :uid, :name, :token
 
@@ -9,6 +11,8 @@ class User
     all.find {|user| user.uid == uid }
   end
 
+  # Find a user by facebook user id or create a new one
+  # given the information fetched from Facebook.
   def self.from_facebook(facebook)
     user = find_by_uid(facebook.me['id'])
 
@@ -21,6 +25,7 @@ class User
     user
   end
 
+  # Initialize attributes from Facebook client
   def from_facebook(facebook)
     @facebook = facebook
     @token = facebook.token
