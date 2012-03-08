@@ -1,0 +1,19 @@
+try {
+  FB.init({
+    appId   : SC.facebook.appId,
+    status  : true,
+    cookie  : true
+  });
+
+  FB.getLoginStatus(function(response) {
+    if (response.status === 'connected') {
+      $('facebook-signed-request').setAttribute("value", response.authResponse.signedRequest);
+      $('facebook-access-token').setAttribute("value", response.authResponse.accessToken);
+      $('facebook-login-form').submit();
+    } else {
+      $('facebook-reload-page').submit();
+    }
+  });
+} catch (x) {
+  $('facebook-reload-page').submit();
+}
