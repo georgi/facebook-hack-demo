@@ -29,7 +29,7 @@ get "/" do
 
       threads = songs.map do |song|
         Thread.new do
-          artists << user.facebook.get("/#{song}")['data']['musician'][0]['name']
+          artists << user.facebook.get("/#{song}")['data']['musician'][0]['name'] rescue nil
         end
       end
 
